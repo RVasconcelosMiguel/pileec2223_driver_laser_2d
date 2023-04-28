@@ -1,0 +1,14 @@
+<launch>
+  <arg name="robot_id" value="$(optenv ROBOT_ID unnamed_robot)"/>
+
+  <group ns="$(arg robot_id)">
+    <node pkg="pileec2223_driver_laser_2d" type="correct_laser_data"
+        name="correct_laser_data" clear_params="true"
+        output="$(optenv ROBOT_OUTPUT screen)">
+      <rosparam command="load" subst_value="True"
+          file="$(find pileec2223_driver_laser_2d)/config/RPLIDARS2.yaml"/>
+      <rosparam command="load" subst_value="True"
+          file="$(find pileec2223_driver_laser_2d)/config/pileec2223_driver_laser_2d.yaml"/>
+    </node>
+  </group>
+</launch>
