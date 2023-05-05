@@ -148,7 +148,8 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
     deltay = vy * deltat;
     deltatheta = vw * deltat;
 
-    ROS_INFO("XINI: %f\n",deltatheta);
+    ROS_INFO("vy: %f\n",vy);
+    ROS_INFO("delta theta: %f\n",deltatheta);
 
     if(deltatheta == 0){
       x = x + deltax * cos(theta) - deltay * sin(theta);
