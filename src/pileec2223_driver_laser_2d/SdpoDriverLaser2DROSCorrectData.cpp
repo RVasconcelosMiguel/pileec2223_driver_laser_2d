@@ -144,13 +144,13 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
 
   for(size_t i = 0; i < laser_->data_count; i++) {
 
-    deltax=vx*deltat;
-    deltay=vy*deltat;
-    deltatheta=vw*deltat;
+    deltax = vx * deltat;
+    deltay = vy * deltat;
+    deltatheta = vw * deltat;
 
-    if(deltatheta==0){
-      x=x+deltax*cos(theta)-deltay*sin(theta);
-      y=y+deltax*sin(theta)+deltay*cos(theta);
+    if(deltatheta == 0){
+      x = x + deltax * cos(theta) - deltay * sin(theta);
+      y = y + deltax * sin(theta) + deltay * cos(theta);
     }else{
       x = x + (deltax * sin(theta + deltatheta) + deltay * (cos(theta + deltatheta) - 1)) * (cos(theta + deltatheta / 2) / deltatheta) - (deltax * (1 - cos(theta + deltatheta)) + deltay * sin(theta + deltatheta)) * (sin(theta + deltatheta / 2) / deltatheta);
       y = y + (deltax * sin(theta + deltatheta) + deltay * (cos(theta + deltatheta) - 1)) * (sin(theta + deltatheta / 2) / deltatheta) + (deltax * (1 - cos(theta + deltatheta)) + deltay * sin(theta + deltatheta)) * (cos(theta + deltatheta / 2) / deltatheta);

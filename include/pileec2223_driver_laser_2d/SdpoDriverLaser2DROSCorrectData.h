@@ -48,10 +48,10 @@ class SdpoDriverLaser2DROSCorrectData {
   void start();
 
  private:
+  void reset();
   void readParam();
   void pubLaserData();
   void subOdom(const nav_msgs::Odometry& msg_odom);
-  void reset();
 };
 
 } // namespace pileec2223_driver_laser_2d
