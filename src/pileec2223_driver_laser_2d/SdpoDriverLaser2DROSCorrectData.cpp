@@ -198,9 +198,9 @@ void SdpoDriverLaser2DROSCorrectData::subOdom(const nav_msgs::Odometry& msg_odom
 }
 
 void SdpoDriverLaser2DROSCorrectData::reset() {
-  x=0;
-  y=0;
-  theta=0;
+  //x=0;
+  //y=0;
+  //theta=0;
 }
 
 } // namespace pileec2223_driver_laser_2d
