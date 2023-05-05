@@ -184,9 +184,9 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
 
 void SdpoDriverLaser2DROSCorrectData::subOdom(const nav_msgs::Odometry& msg_odom) {
   // Process odom message (remove example debug message)
-  ROS_INFO("[pileec2223_driver_laser_2d] Odom: %f m %f m (%f deg)",
+  /*ROS_INFO("[pileec2223_driver_laser_2d] Odom: %f m %f m (%f deg)",
            msg_odom.pose.pose.position.x, msg_odom.pose.pose.position.y,
-           tf::getYaw(msg_odom.pose.pose.orientation) * 180.0 / M_PI);
+           tf::getYaw(msg_odom.pose.pose.orientation) * 180.0 / M_PI);*/
 
     vx = msg_odom.twist.twist.linear.x;
     vy = msg_odom.twist.twist.linear.y;
@@ -198,9 +198,9 @@ void SdpoDriverLaser2DROSCorrectData::subOdom(const nav_msgs::Odometry& msg_odom
 }
 
 void SdpoDriverLaser2DROSCorrectData::reset() {
-  //x=0;
-  //y=0;
-  //theta=0;
+  x=0;
+  y=0;
+  theta=0;
 }
 
 } // namespace pileec2223_driver_laser_2d
