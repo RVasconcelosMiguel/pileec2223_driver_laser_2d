@@ -6,6 +6,10 @@
         "random": "cpp",
         "future": "cpp",
         "optional": "cpp",
-        "memory_resource": "cpp"
+        "memory_resource": "cpp",
+        "*.tcc": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp"
     }
 }
