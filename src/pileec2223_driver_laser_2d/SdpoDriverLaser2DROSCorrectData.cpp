@@ -139,7 +139,7 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
   float deltax;
   float deltay;
   float deltatheta;
-  float deltat=1/360/8;
+  float deltat=0,000347222;
   ROS_INFO("delta T: %f\n",deltat);
 
 
