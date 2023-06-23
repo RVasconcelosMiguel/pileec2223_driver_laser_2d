@@ -23,6 +23,7 @@ SdpoDriverLaser2DROSCorrectData::SdpoDriverLaser2DROSCorrectData() {
 
   pub_laser_ = nh.advertise<sensor_msgs::PointCloud>(
       "laser_scan_point_cloud", 1);
+  pub_laser_2 = nh.advertise<sensor_msgs::PointCloud>("laser_scan_point_cloud2", 1);
   sub_odom_ = nh.subscribe("odom", 1,
                            &SdpoDriverLaser2DROSCorrectData::subOdom, this);
 }
@@ -124,7 +125,7 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
   sensor_msgs::PointCloud msg;
 
   // Debug message (remove it later...)
-  ROS_INFO("[pileec2223_driver_laser_2d] Laser data (not corrected):");
+  //ROS_INFO("[pileec2223_driver_laser_2d] Laser data (not corrected):");
   // just printing the first sample
   std::cout << laser_->dist_data[0] << " m @ "
             << laser_->ang_data[0] * 180 / M_PI << " deg "
@@ -134,33 +135,49 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
   msg.header.stamp = ros::Time::now();
   msg.points.resize(laser_->data_count);
 
-  float x_ini;
-  float y_ini;
-  float deltax;
-  float deltay;
-  float deltatheta;
+  float x_ini=0;
+  float y_ini=0;
+  float deltax=0;
+  float deltay=0;
+  float deltatheta=0;
+  float theta=0;
+  float x = 0;
+  float y = 0;
   float deltat=0.000347222;
-  ROS_INFO("delta TTTT: %f\n",deltat);
-
 
   for(size_t i = 0; i < laser_->data_count; i++) {
 
     deltax = vx * deltat;
     deltay = vy * deltat;
     deltatheta = vw * deltat;
-
-    ROS_INFO("vy: %f\n",vy);
+  
+    //ROS_INFO("-------------------------");
     //ROS_INFO("delta Y: %f\n",deltay);
-    ROS_INFO("delta theta: %f\n",deltatheta);
-
-    if(deltatheta == 0){
-      x = x + deltax * cos(theta) - deltay * sin(theta);
-      y = y + deltax * sin(theta) + deltay * cos(theta);
+    //ROS_INFO("delta X: %f\n",deltax);
+    //ROS_INFO("delta theta: %f\n",deltatheta);
+    //ROS_INFO("theta: %f\n",theta);
+    //ROS_INFO("x: %f\n",x);
+    //ROS_INFO("y: %f\n",y);
+    //ROS_INFO("vy: %f\n",vy);
+    //ROS_INFO("vx: %f\n",vx);
+    //ROS_INFO("vw: %f\n",vw);
+    //ROS_INFO("-------------------------");
+    
+    if(abs(deltatheta) < 0,00003){
+      x = x + deltax * cos(deltatheta) - deltay * sin(deltatheta);
+      y = x + deltax * sin(deltatheta) + deltay * cos(deltatheta);
+      //x=deltax;
+      //y=deltay;
     }else{
       x = x + (deltax * sin(theta + deltatheta) + deltay * (cos(theta + deltatheta) - 1)) * (cos(theta + deltatheta / 2) / deltatheta) - (deltax * (1 - cos(theta + deltatheta)) + deltay * sin(theta + deltatheta)) * (sin(theta + deltatheta / 2) / deltatheta);
-      y = y + (deltax * sin(theta + deltatheta) + deltay * (cos(theta + deltatheta) - 1)) * (sin(theta + deltatheta / 2) / deltatheta) + (deltax * (1 - cos(theta + deltatheta)) + deltay * sin(theta + deltatheta)) * (cos(theta + deltatheta / 2) / deltatheta);
+      y = x + (deltax * sin(theta + deltatheta) + deltay * (cos(theta + deltatheta) - 1)) * (sin(theta + deltatheta / 2) / deltatheta) + (deltax * (1 - cos(theta + deltatheta)) + deltay * sin(theta + deltatheta)) * (cos(theta + deltatheta / 2) / deltatheta);
+      //x = (deltax * sin(deltatheta) + deltay * (cos(deltatheta) - 1)) * (cos(deltatheta / 2) / deltatheta) - (deltax * (1 - cos(deltatheta)) + deltay * sin(deltatheta)) * (sin(deltatheta / 2) / deltatheta);
+      //y = (deltax * sin(deltatheta) + deltay * (cos(deltatheta) - 1)) * (sin(deltatheta / 2) / deltatheta) + (deltax * (1 - cos(deltatheta)) + deltay * sin(deltatheta)) * (cos(deltatheta / 2) / deltatheta);
     }
-    theta=theta+deltatheta;
+    //theta=theta+deltatheta;
+    //ROS_INFO("theta: %f\n",theta);
+    //ROS_INFO("x: %f\n",x);
+    //ROS_INFO("y: %f\n",y);
 
     msg.points.at(i).x =
         laser_->dist_data[i] * cos(laser_->ang_data[i]);
@@ -168,12 +185,12 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
         laser_->dist_data[i] * sin(laser_->ang_data[i]);
     msg.points.at(i).z = 0;
 
-    x_ini=msg.points.at(i).x;//
+    x_ini=msg.points.at(i).x;
     y_ini=msg.points.at(i).y;
 
-    msg.points.at(i).x = cos(theta) * x_ini - sin(theta) * y_ini + x;//
-    msg.points.at(i).y = sin(theta) * x_ini + cos(theta) * y_ini + y;//
-
+    msg.points.at(i).x = cos(deltatheta) * x_ini - sin(deltatheta) * y_ini + x;//
+    msg.points.at(i).y = sin(deltatheta) * x_ini + cos(deltatheta) * y_ini + y;//
+    
   }
 
   tf::StampedTransform laser2base_tf;
@@ -185,6 +202,8 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
   tf_broad_.sendTransform(laser2base_tf);
 
   pub_laser_.publish(msg);
+  pubLaserDataNC();
+  ROS_INFO("CORR\n\n");
 }
 
 void SdpoDriverLaser2DROSCorrectData::subOdom(const nav_msgs::Odometry& msg_odom) {
@@ -192,20 +211,38 @@ void SdpoDriverLaser2DROSCorrectData::subOdom(const nav_msgs::Odometry& msg_odom
   /*ROS_INFO("[pileec2223_driver_laser_2d] Odom: %f m %f m (%f deg)",
            msg_odom.pose.pose.position.x, msg_odom.pose.pose.position.y,
            tf::getYaw(msg_odom.pose.pose.orientation) * 180.0 / M_PI);*/
-
     vx = msg_odom.twist.twist.linear.x;
     vy = msg_odom.twist.twist.linear.y;
     vw = msg_odom.twist.twist.angular.z;
-        
-  
   // Need to use later the oodometry velocity data for correcting laser data
   // Note: odom and laser are asynchronous from each other!!!!
 }
 
-void SdpoDriverLaser2DROSCorrectData::reset() {
-  x=0;
-  y=0;
-  theta=0;
-}
+void SdpoDriverLaser2DROSCorrectData::pubLaserDataNC() {
+  sensor_msgs::PointCloud msg;
 
+  msg.header.frame_id = laser_frame_id_;
+  msg.header.stamp = ros::Time::now();
+  msg.points.resize(laser_->data_count);
+  for(size_t i = 0; i < laser_->data_count; i++) {
+    msg.points.at(i).x =
+        laser_->dist_data[i] * cos(laser_->ang_data[i]);
+    msg.points.at(i).y =
+        laser_->dist_data[i] * sin(laser_->ang_data[i]);
+    msg.points.at(i).z = 0;
+  }
+
+  tf::StampedTransform laser2base_tf;
+  laser2base_tf.setOrigin(tf::Vector3(
+    0, 0, 0));
+  laser2base_tf.setRotation(tf::createQuaternionFromYaw(0.0));
+  laser2base_tf.stamp_ = msg.header.stamp;
+  laser2base_tf.frame_id_ = base_frame_id_;
+  laser2base_tf.child_frame_id_ = laser_frame_id_;
+  tf_broad_.sendTransform(laser2base_tf);
+
+  pub_laser_2.publish(msg);
+  ROS_INFO("NOCORR\n\n");
+
+}
 } // namespace pileec2223_driver_laser_2d

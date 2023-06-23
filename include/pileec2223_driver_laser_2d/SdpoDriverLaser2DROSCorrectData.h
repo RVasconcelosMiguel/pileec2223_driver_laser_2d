@@ -16,6 +16,7 @@ class SdpoDriverLaser2DROSCorrectData {
   ros::NodeHandle nh;
 
   ros::Publisher pub_laser_;
+  ros::Publisher pub_laser_2;
   ros::Subscriber sub_odom_;
   tf::TransformBroadcaster tf_broad_;
 
@@ -40,6 +41,8 @@ class SdpoDriverLaser2DROSCorrectData {
   float vx;
   float vy;
   float vw;
+  int id;
+  int id2;
 
  public:
   SdpoDriverLaser2DROSCorrectData();
@@ -48,10 +51,10 @@ class SdpoDriverLaser2DROSCorrectData {
   void start();
 
  private:
-  void reset();
   void readParam();
   void pubLaserData();
   void subOdom(const nav_msgs::Odometry& msg_odom);
+  void pubLaserDataNC();
 };
 
 } // namespace pileec2223_driver_laser_2d
