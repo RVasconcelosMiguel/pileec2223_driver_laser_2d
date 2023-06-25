@@ -150,34 +150,17 @@ void SdpoDriverLaser2DROSCorrectData::pubLaserData() {
     deltax = vx * deltat;
     deltay = vy * deltat;
     deltatheta = vw * deltat;
-  
-    //ROS_INFO("-------------------------");
-    //ROS_INFO("delta Y: %f\n",deltay);
-    //ROS_INFO("delta X: %f\n",deltax);
-    //ROS_INFO("delta theta: %f\n",deltatheta);
-    //ROS_INFO("theta: %f\n",theta);
-    //ROS_INFO("x: %f\n",x);
-    //ROS_INFO("y: %f\n",y);
-    //ROS_INFO("vy: %f\n",vy);
-    //ROS_INFO("vx: %f\n",vx);
-    //ROS_INFO("vw: %f\n",vw);
-    //ROS_INFO("-------------------------");
     
     if(abs(deltatheta) < 0,00003){
       x = x + deltax * cos(deltatheta) - deltay * sin(deltatheta);
       y = x + deltax * sin(deltatheta) + deltay * cos(deltatheta);
-      //x=deltax;
-      //y=deltay;
-    }else{
+   }else{
       x = x + (deltax * sin(theta + deltatheta) + deltay * (cos(theta + deltatheta) - 1)) * (cos(theta + deltatheta / 2) / deltatheta) - (deltax * (1 - cos(theta + deltatheta)) + deltay * sin(theta + deltatheta)) * (sin(theta + deltatheta / 2) / deltatheta);
       y = x + (deltax * sin(theta + deltatheta) + deltay * (cos(theta + deltatheta) - 1)) * (sin(theta + deltatheta / 2) / deltatheta) + (deltax * (1 - cos(theta + deltatheta)) + deltay * sin(theta + deltatheta)) * (cos(theta + deltatheta / 2) / deltatheta);
-      //x = (deltax * sin(deltatheta) + deltay * (cos(deltatheta) - 1)) * (cos(deltatheta / 2) / deltatheta) - (deltax * (1 - cos(deltatheta)) + deltay * sin(deltatheta)) * (sin(deltatheta / 2) / deltatheta);
-      //y = (deltax * sin(deltatheta) + deltay * (cos(deltatheta) - 1)) * (sin(deltatheta / 2) / deltatheta) + (deltax * (1 - cos(deltatheta)) + deltay * sin(deltatheta)) * (cos(deltatheta / 2) / deltatheta);
     }
-    //theta=theta+deltatheta;
-    //ROS_INFO("theta: %f\n",theta);
-    //ROS_INFO("x: %f\n",x);
-    //ROS_INFO("y: %f\n",y);
+
+    theta=theta+deltatheta;
+
 
     msg.points.at(i).x =
         laser_->dist_data[i] * cos(laser_->ang_data[i]);
